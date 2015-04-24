@@ -1,17 +1,17 @@
-var http = require('http');
+var request = require('request');
 
 var Leagues = function() {};
 
 Leagues.prototype.all = function(callback) {
-  this._request('http://api.football-data.org/alpha/soccerseasons', function(res) { 
-    callback(res.statusCode);
+  request.get('http://api.football-data.org/alpha/soccerseasons', function(err, res, body) { 
+    callback(body);
   }); 
 };
 
 Leagues.prototype.find = function(league, callback) {
   var that = this;
   this.all(function(leagues) { 
-    var leagueJSON = that._findLeague(leagues, league);
+    var leagueJSON = that._findLeague(JSON.parse(leagues), league);
     callback(leagueJSON);
   });
 };
@@ -25,10 +25,6 @@ Leagues.prototype._findLeague = function(leagues, league) {
       return leagues[i];
     };
   }
-};
-
-Leagues.prototype._request = function(url, callback) {
-  http.get(url, callback);
 };
 
 module.exports = Leagues;
