@@ -27,7 +27,7 @@ describe('League', function() {
 
   it('should get all leagues', function(done) { 
     mockEndPoint('alpha/soccerseasons', allLeaguesJSON);
-    leagues.all(function(data) {
+    leagues.all(function(err, data) {
       expect(data).to.eql(allLeaguesJSON);
       done();
     });
@@ -36,7 +36,7 @@ describe('League', function() {
   it('should get a specific league', function(done) { 
     mockEndPoint('alpha/soccerseasons', allLeaguesJSON);
     mockEndPoint('alpha/soccerseasons/354', premierLeagueJSON);
-    leagues.find('Premier League', function(data) { 
+    leagues.find('Premier League', function(err, data) { 
       expect(data).to.eql(premierLeagueJSON);
       done();
     });
