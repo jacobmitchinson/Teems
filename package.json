@@ -17,6 +17,7 @@
   "devDependencies": {
     "chai": "^2.2.0",
     "grunt-init": "^0.3.2",
+    "jshint": "^2.7.0",
     "mocha": "^2.2.4",
     "nock": "^1.6.1",
     "request": "^2.55.0"
