@@ -1,19 +1,19 @@
 var request = require('request');
 
-var Teams = function(league) {
-  this.league = league;
+var Teams = function() {
+
 };
 
-Teams.prototype.all = function(callback) {
-  var leagueURL = this.league._links.teams.href;
+Teams.prototype.all = function(league, callback) {
+  var leagueURL = league._links.teams.href;
   request.get(leagueURL, function(err, res, body) { 
     callback(err, body);
   });
 };
 
-Teams.prototype.find = function(team, callback) {
+Teams.prototype.find = function(league, team, callback) {
   var that = this;
-  this.all(function(err, teams) { 
+  this.all(league, function(err, teams) { 
     var teamJSON = that._findTeam(JSON.parse(teams), team);
     callback(err, teamJSON);
   });
