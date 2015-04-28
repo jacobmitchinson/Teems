@@ -1,7 +1,6 @@
 var expect = require('chai').expect;
 var nock = require('nock');
 var Tweets = require('../../app/lib/tweets');
-var fs = require('fs');
 
 describe('Tweets', function() { 
 
