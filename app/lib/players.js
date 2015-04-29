@@ -6,7 +6,14 @@ var Players = function() {
 
 Players.prototype.all = function(team, callback) {
   var playersURL = team._links.players.href;
-  request.get(playersURL, function(err, res, body) { 
+  var options = {
+                  headers: {
+                  'X-Auth-Token': process.env.FOOTBALL_DATA
+                  },
+                  uri: playersURL,
+                  method: 'GET'
+                }
+  request(options, function(err, res, body) { 
     callback(err, body);
   });
 };
@@ -24,7 +31,7 @@ Players.prototype._searchForPlayer = function(players, player) {
     var playerNameJSON = players.players[i].name;
     var regEx = new RegExp(player, 'g');
     var match = playerNameJSON.match(regEx);
-    if(match) { 
+    if(match) {
       return players.players[i];
     }
   };
