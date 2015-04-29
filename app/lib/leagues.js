@@ -1,11 +1,18 @@
 var request = require('request');
+var options = {
+                headers: {
+                'X-Auth-Token': process.env.FOOTBALL_DATA
+                },
+                uri: 'http://api.football-data.org/alpha/soccerseasons',
+                method: 'GET'
+              }
 
 var Leagues = function() {};
 
 Leagues.prototype.all = function(callback) {
-  request.get('http://api.football-data.org/alpha/soccerseasons', function(err, res, body) { 
+  request(options, function (err, res, body) {
     callback(err, body);
-  }); 
+  });
 };
 
 Leagues.prototype.find = function(league, callback) {
