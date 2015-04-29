@@ -6,7 +6,14 @@ var Teams = function() {
 
 Teams.prototype.all = function(league, callback) {
   var leagueURL = league._links.teams.href;
-  request.get(leagueURL, function(err, res, body) { 
+  var options = {
+                  headers: {
+                  'X-Auth-Token': process.env.FOOTBALL_DATA
+                  },
+                  uri: leagueURL,
+                  method: 'GET'
+                }
+  request(options, function(err, res, body) {
     callback(err, body);
   });
 };
@@ -21,14 +28,10 @@ Teams.prototype.find = function(league, team, callback) {
 
 Teams.prototype._findTeam = function(teams, team) {
   for(var i = 0; i < teams.teams.length; i++) { 
-    var teamNameJSON = teams.teams[i].code;
-    var regEx = new RegExp(team, 'g');
-    var match = teamNameJSON.match(regEx);
-    if(match) { 
+    if(teams.teams[i].code === team) { 
       return teams.teams[i];
     };
   }
 };
-
 
 module.exports = Teams;
