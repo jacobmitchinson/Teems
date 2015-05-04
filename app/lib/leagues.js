@@ -7,7 +7,9 @@ var options = {
                 method: 'GET'
               }
 
-var Leagues = function() {};
+var Leagues = function() {
+  this.currentLeague = {};
+};
 
 Leagues.prototype.all = function(callback) {
   request(options, function (err, res, body) {
@@ -16,19 +18,32 @@ Leagues.prototype.all = function(callback) {
 };
 
 Leagues.prototype.find = function(league, callback) {
+  if(this._check(league))  { 
+    callback(null, this.currentLeague);
+  } else { 
+    this._searchLeague(league, callback)
+  }
+};
+
+Leagues.prototype._searchLeague = function(league, callback) {
   var that = this;
   this.all(function(err, leagues) { 
     var leagueJSON = that._findLeague(JSON.parse(leagues), league);
+    this.currentLeague = leagueJSON;
     callback(err, leagueJSON);
   });
 };
 
+Leagues.prototype._check = function(league) {
+  if(league === this.currentLeague.code) { 
+    return true;
+  }
+};
+
 Leagues.prototype._findLeague = function(leagues, league) {
   for(var i = 0; i < leagues.length; i++) { 
-    var leagueNameJSON = leagues[i].caption;
-    var regEx = new RegExp(league, 'g');
-    var match = leagueNameJSON.match(regEx);
-    if(match) { 
+    var leagueNameJSON = leagues[i].league;
+    if(leagues[i].league === league) {
       return leagues[i];
     };
   }
