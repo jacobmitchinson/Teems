@@ -1,28 +1,54 @@
+var Leagues = require('./leagues');
 var request = require('request');
 
 var Teams = function() {
-
+  this.leagues = new Leagues();
+  this.currentTeam = {};
+  this.options = {
+                    headers: {
+                    'X-Auth-Token': process.env.FOOTBALL_DATA
+                    },
+                    method: 'GET'
+                  }  
 };
 
 Teams.prototype.all = function(league, callback) {
-  var leagueURL = league._links.teams.href;
-  var options = {
-                  headers: {
-                  'X-Auth-Token': process.env.FOOTBALL_DATA
-                  },
-                  uri: leagueURL,
-                  method: 'GET'
-                }
-  request(options, function(err, res, body) {
-    callback(err, body);
+  var that = this;
+  this._getLeagueURL(league, function(err, leagueURL) { 
+    that.options.uri = leagueURL;
+    request(that.options, function(err, res, teams) {
+      callback(err, teams);
+    });  
   });
 };
 
 Teams.prototype.find = function(league, team, callback) {
+  if(this._isCurrentTeam(team)) { 
+    callback(null, this.currentTeam);
+  } else { 
+    this._searchTeam(league, team, callback);
+  }
+};
+
+Teams.prototype._searchTeam = function(league, team, callback) {
   var that = this;
   this.all(league, function(err, teams) { 
     var teamJSON = that._findTeam(JSON.parse(teams), team);
+    that.currentTeam = teamJSON;
     callback(err, teamJSON);
+  });
+};
+
+Teams.prototype._isCurrentTeam = function(team) {
+  if(team === this.currentTeam.code) { 
+    return true;
+  }
+};
+
+Teams.prototype._getLeagueURL = function(league, callback) {
+  this.leagues.find(league, function(err, foundLeague) { 
+    var leagueURL = foundLeague._links.teams.href;
+    callback(err, leagueURL);
   });
 };
 
