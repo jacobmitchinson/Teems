@@ -19,18 +19,26 @@ describe('Tweets', function() {
     mockEndPoint(searchUrl, '1.1/users/search.json?q=Saido%20Berahino', jsonData.berahinoData);
   }
 
-  function mockRateLimitExceeded() { 
-    mockEndPoint(apiUrl, '1.1/application/rate_limit_status.json', jsonData.rateLimitExceededData);
-  }
-
   function mockRateLimitNotExceeded() { 
     mockEndPoint(apiUrl, '1.1/application/rate_limit_status.json', jsonData.rateLimitData);
+  }
+
+  function mockRateLimitExceeded() { 
+    mockEndPoint(apiUrl, '1.1/application/rate_limit_status.json', jsonData.rateLimitExceededData);
   }
 
   function updateEndPoint() { 
     setTimeout(function() {
       mockRateLimitNotExceeded();
     }, 2500);
+  }
+
+  function playerSearch(done) { 
+    tweets.get('Saido Berahino', function(err, player, response) { 
+      var berahino = jsonData.berahinoData[0];
+      expect(player).to.eql(berahino);
+      done();
+    });
   }
 
   beforeEach(function() { 
@@ -40,11 +48,7 @@ describe('Tweets', function() {
   it('should get a player ID', function(done) { 
     mockSaidoBerahinoSearch();
     mockRateLimitNotExceeded();
-    tweets.get('Saido Berahino', function(err, player, response) { 
-      var berahino = jsonData.berahinoData[0];
-      expect(player).to.eql(berahino);
-      done();
-    });
+    playerSearch(done);
   });
 
   it('should wait if the rate limit has been exceeded', function(done) { 
@@ -52,11 +56,7 @@ describe('Tweets', function() {
     mockRateLimitExceeded();
     tweets.waitTime = 3000;
     updateEndPoint();
-    tweets.get('Saido Berahino', function(err, player, response) { 
-      var berahino = jsonData.berahinoData[0];
-      expect(player).to.eql(berahino);
-      done();
-    });
+    playerSearch(done);
   });
 
   it('should return false if search limit has not been exceeded', function(done) { 
